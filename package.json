@@ -1,0 +1,27 @@
+{
+  "name": "ws-easy",
+  "version": "0.0.1",
+  "description": "A package for working with websockets easily",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SergioGutierrezVillalba/ws-easy.git"
+  },
+  "keywords": [
+    "websocket",
+    "streaming",
+    "easy"
+  ],
+  "author": "Sergio Gutierrez <gv.sergiodevs@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SergioGutierrezVillalba/ws-easy/issues"
+  },
+  "homepage": "https://github.com/SergioGutierrezVillalba/ws-easy#readme",
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
+}

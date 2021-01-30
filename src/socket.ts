@@ -1,6 +1,6 @@
 import { Server as WebSocketServer } from 'ws';
 
-import { WebSocketNotExistsError, WebSocketNotFoundError } from './errors';
+import { WebSocketCloseError, WebSocketNotExistsError, WebSocketNotFoundError } from './errors';
 import { WebSocketEvent, WebSocketCloseEvent, WebSocketConnectionEvent, StandardEvents, WebSocketErrorEvent, WebSocketCustomEvent } from "./events";
 
 export class WsEasyInitializer {
@@ -55,17 +55,17 @@ export class WsEasy {
         this.events.set(wsEvent.name, wsEvent);
     }
 
-    public destroy () : Promise<Error | void> {
-        return new Promise((resolve, reject) => {
+    public destroy () : Promise<WebSocketCloseError | void> {
+        return new Promise((resolve: () => void, reject: (reason: WebSocketCloseError) => void) => {
             this.wss.close((err: Error | undefined) => {
-                if (err && err instanceof Error) {
-                    reject(err); 
+                if(err) {
+                    reject(new WebSocketCloseError(err.message));
                 } else {
                     this.closed = true;
                     resolve();
                 }
             });
-        }) 
+        })  
     }
 
     public isClosed () : boolean {

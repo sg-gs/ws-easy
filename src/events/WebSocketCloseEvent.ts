@@ -1,29 +1,31 @@
+import { Server as WebSocketServer } from 'ws';
+
 import WebSocketEvent from "./WebSocketEvent";
 import StandardEvents from "./StandardEvents";
 
 export default class WebSocketCloseEvent implements WebSocketEvent {
 
-    callback: Function;
+    callback: (wss: WebSocketServer) => void;;
     name = StandardEvents.close;
-    ws!: WebSocket;
+    wss!: WebSocketServer;
 
-    constructor () {
-        this.callback = () => {};
+    constructor() {
+        this.callback = () => { };
     }
 
-    getCallback(): Function {
+    getCallback(): (wss: WebSocketServer) => void {
         return this.callback;
-    }   
+    }
 
-    setCallback(cb: Function): void {
-        this.ws.onclose = function (this: WebSocket, ev: Event) {
-            cb(this, ev);
-        };
+    setCallback(cb: (wss: WebSocketServer) => void): void {
+        this.wss.on(StandardEvents.close, (wss: WebSocketServer) => {
+            cb(wss);
+        });
         this.callback = cb;
     }
 
-    using (ws: WebSocket): WebSocketEvent {
-        this.ws = ws;
+    using(wss: WebSocketServer): WebSocketEvent {
+        this.wss = wss;
         return this;
     }
 

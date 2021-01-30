@@ -1,29 +1,29 @@
+import { Server as WebSocketServer } from 'ws';
+
 import WebSocketEvent from "./WebSocketEvent";
 
 export default class WebSocketErrorEvent implements WebSocketEvent {
 
-    callback: Function;
+    callback: (wss: WebSocketServer) => void;
     name: string;
-    ws!: WebSocket;
+    wss!: WebSocketServer;
 
-    constructor (name: string) {
-        this.callback = () => {};
+    constructor(name: string) {
+        this.callback = () => { };
         this.name = name;
     }
 
-    getCallback (): Function {
+    getCallback(): (wss: WebSocketServer) => void {
         return this.callback;
     }
 
-    setCallback (cb: Function): void {
-        this.ws.onmessage = function (this: WebSocket, ev: Event) {
-            cb(this, ev);
-        };
+    setCallback(cb: (wss: WebSocketServer) => void): void {
+        this.wss.on('message', cb);
         this.callback = cb;
     }
 
-    using (ws: WebSocket): WebSocketEvent {
-        this.ws = ws;
+    using(wss: WebSocketServer): WebSocketEvent {
+        this.wss = wss;
         return this;
     }
 

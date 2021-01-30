@@ -1,8 +1,10 @@
+import { Server as WebSocketServer } from 'ws';
+
 export default interface WebSocketEvent {
-    callback: Function;
+    callback: (wss: WebSocketServer) => void;
     name: string;
-    ws: WebSocket;
-    getCallback(): Function;
-    setCallback(cb: Function): void;
-    using (ws: WebSocket): WebSocketEvent;
+    wss: WebSocketServer;
+    getCallback(): (wss: WebSocketServer) => void;
+    setCallback(cb: (wss: WebSocketServer) => void): void;
+    using(wss: WebSocketServer): WebSocketEvent;
 }

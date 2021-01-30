@@ -3,7 +3,7 @@ import { Server as WebSocketServer } from 'ws';
 import WebSocketEvent from "./WebSocketEvent";
 import StandardEvents from "./StandardEvents";
 
-export default class WebSocketErrorEvent implements WebSocketEvent {
+export default class WebSocketConnectionEvent implements WebSocketEvent {
 
     callback: (wss: WebSocketServer) => void;;
     name = StandardEvents.error;
@@ -18,7 +18,7 @@ export default class WebSocketErrorEvent implements WebSocketEvent {
     }
 
     setCallback(cb: (wss: WebSocketServer) => void): void {
-        this.wss.on(StandardEvents.error, cb);
+        this.wss.on(StandardEvents.connection, cb);
         this.callback = cb;
     }
 

@@ -1,7 +1,8 @@
 enum StandardEvents {
     close = 'close',
     error = 'error',
-    connection = 'connection'
+    message = 'message',
+    connection = 'connection',
 }
 
 export default StandardEvents;

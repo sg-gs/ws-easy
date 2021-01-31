@@ -10,3 +10,12 @@ export class WebSocketNotExistsError extends WebSocketError {
 export class WebSocketNotFoundError extends WebSocketError {
     message: string = `${this.message}: wss is not an instance of WebSocketServer`;
 }
+
+export class WebSocketCloseError extends WebSocketError {
+    message: string = `${this.message}: wss close error, `;
+
+    constructor (errmsg: string) {
+        super();
+        this.message += `the reason is: ${errmsg}`;
+    }
+}

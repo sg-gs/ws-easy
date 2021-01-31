@@ -17,7 +17,7 @@ export default class WebSocketConnectionEvent implements WebSocketEvent {
         return this.callback;
     }
 
-    setCallback(cb: (wss: WebSocketServer) => void): void {
+    setCallback(cb: (wss: WebSocketServer, ...args: any[]) => void): void {
         this.wss.on(StandardEvents.connection, cb);
         this.callback = cb;
     }

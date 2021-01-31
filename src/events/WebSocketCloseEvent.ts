@@ -17,10 +17,8 @@ export default class WebSocketCloseEvent implements WebSocketEvent {
         return this.callback;
     }
 
-    setCallback(cb: (wss: WebSocketServer) => void): void {
-        this.wss.on(StandardEvents.close, (wss: WebSocketServer) => {
-            cb(wss);
-        });
+    setCallback(cb: (wss: WebSocketServer, ...args: any[]) => void): void {
+        this.wss.on(StandardEvents.close, cb);
         this.callback = cb;
     }
 

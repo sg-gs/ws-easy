@@ -4,7 +4,7 @@ export default interface WebSocketEvent {
     callback: (wss: WebSocketServer) => void;
     name: string;
     wss: WebSocketServer;
-    getCallback(): (wss: WebSocketServer) => void;
-    setCallback(cb: (wss: WebSocketServer) => void): void;
+    getCallback(): (wss: WebSocketServer, ...args: any[]) => void;
+    setCallback(cb: (wss: WebSocketServer, ...args: any[]) => void): void;
     using(wss: WebSocketServer): WebSocketEvent;
 }

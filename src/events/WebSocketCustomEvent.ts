@@ -4,7 +4,7 @@ import WebSocketEvent from "./WebSocketEvent";
 
 export default class WebSocketErrorEvent implements WebSocketEvent {
 
-    callback: (wss: WebSocketServer) => void;
+    callback: (wss: WebSocketServer, ...args: any[]) => void;
     name: string;
     wss!: WebSocketServer;
 
@@ -13,11 +13,11 @@ export default class WebSocketErrorEvent implements WebSocketEvent {
         this.name = name;
     }
 
-    getCallback(): (wss: WebSocketServer) => void {
+    getCallback(): (wss: WebSocketServer, ...args: any[]) => void {
         return this.callback;
     }
 
-    setCallback(cb: (wss: WebSocketServer) => void): void {
+    setCallback(cb: (wss: WebSocketServer, ...args: any[]) => void): void {
         this.wss.on('message', cb);
         this.callback = cb;
     }

@@ -1,58 +1,76 @@
+import { IncomingMessage } from 'http';
 import { Server as WebSocketServer } from 'ws';
 
 import { WebSocketCloseError, WebSocketNotExistsError, WebSocketNotFoundError } from './errors';
-import { WebSocketEvent, WebSocketCloseEvent, WebSocketConnectionEvent, StandardEvents, WebSocketErrorEvent, WebSocketCustomEvent } from "./events";
+import { WebSocketEvent, WebSocketCloseEvent, WebSocketConnectionEvent, StandardEvents, WebSocketErrorEvent, WebSocketCustomEvent, WebSocketCustomEvents, CustomEvents } from "./events";
+import WsEasyEvent from './events/WsEasyEvent';
 
-export class WsEasyInitializer {
-    constructor(host: string, port: number) {
-        const server = new WebSocketServer({ host, port });
-        new WsEasy(server);
-    }
+export function init (host: string, port: number) {
+    const s = new WebSocketServer({ host, port });
+    s.on('connection', (wss: WebSocketServer, socket: WebSocket, request: IncomingMessage) => {
+        socket.onmessage = console.log
+    })
+    return new WsEasy(s);
 }
+
 export class WsEasy {
-    private wss!: WebSocketServer;
-    public events: Map<String, WebSocketEvent>;
+    public wss!: WebSocketServer;
+    private _ws: WebSocket;
+    public stdEvents: Map<StandardEvents, WebSocketEvent>;
+    public cstEvents: WebSocketCustomEvents;
     private closed: boolean
 
     constructor(wss: WebSocketServer) {
         this.wss = wss;
         this.closed = false;
 
-        this.events = new Map<StandardEvents | string, WebSocketEvent>();
-        this.events.set(StandardEvents.close, new WebSocketCloseEvent());
-        this.events.set(StandardEvents.error, new WebSocketErrorEvent());
-        this.events.set(StandardEvents.connection, new WebSocketConnectionEvent());
+        this.stdEvents = new Map<StandardEvents, WebSocketEvent>();
+        this.stdEvents.set(StandardEvents.close, new WebSocketCloseEvent());
+        this.stdEvents.set(StandardEvents.error, new WebSocketErrorEvent());
+        this.stdEvents.set(StandardEvents.connection, new WebSocketConnectionEvent());   
+
+        this.cstEvents = new WebSocketCustomEvents();
+
+        this.wss.on('message', (msg: string) => {
+            console.log('eeoeoeo', msg)
+            const { name, data } : WsEasyEvent = JSON.parse(msg);
+            // TODO: infer data type and add parser to it
+            for (const cstEventName in this.cstEvents.customEventsMap.keys()) {
+                if (name === cstEventName) {
+                    const cb = this.cstEvents.customEventsMap.get(name)!.getCallback();
+                    cb(wss, data);
+                }
+            }
+        });
     }
 
-    public on(event: StandardEvents | string, cb: (wss: WebSocketServer) => void): void {
-        if (!this.wss) throw new WebSocketNotExistsError();
+    public on(event: StandardEvents | string, cb: (wss: WebSocketServer, ...args: any[]) => void): void {
 
-        if (!(this.wss instanceof WebSocketServer)) throw new WebSocketNotFoundError();        
+        const notExists = !(this.wss);
+        const notFound  = !(this.wss instanceof WebSocketServer);
 
-        const exists = this.events.has(event);
-        const notNull = this.events.get(event);
+        if (notExists) throw new WebSocketNotExistsError();
+        if (notFound)  throw new WebSocketNotFoundError();    
 
-        if (exists && notNull) {
-
-            if(notNull instanceof WebSocketCloseEvent) {
-                const closeWrapper = (wss: WebSocketServer) => {
-                    cb(wss);
-                    this.closed = true;
-                }
-                this.events.get(StandardEvents.close)?.using(this.wss).setCallback(closeWrapper);
-            } else {
-                this.events.get(event)?.using(this.wss).setCallback(cb);
-            }
-            
+        console.log(`${event}`)
+        
+        if(event in StandardEvents) {
+            const wsEvent = (<any>StandardEvents)[event];
+            this._handleStandardEvent(wsEvent!, cb);
         } else {
-            const customEvent = new WebSocketCustomEvent(event);
-            customEvent.using(this.wss).setCallback(cb);
-            this._add(customEvent);
+            this.cstEvents.add(new WebSocketCustomEvent(event, cb));
         }
     }
 
-    private _add(wsEvent: WebSocketEvent | WebSocketCustomEvent): void {
-        this.events.set(wsEvent.name, wsEvent);
+    private _handleStandardEvent (name: StandardEvents, cb: (wss: WebSocketServer, ...args: any[]) => void) : void {
+        if(name === StandardEvents.close) {
+            const closeCb = (wss: WebSocketServer, ...args: any[]) => {
+                cb(wss, ...args);
+                this.closed = true;
+            } 
+            cb = closeCb;
+        }
+        this.wss.on(name, cb);
     }
 
     public destroy () : Promise<WebSocketCloseError | void> {

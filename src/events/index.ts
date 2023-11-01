@@ -1,3 +1,4 @@
+export { default as CustomEvents } from "./CustomEvents";
 export { default as StandardEvents } from "./StandardEvents";
 export { default as WebSocketEvent } from "./WebSocketEvent"; 
 export { default as WebSocketCloseEvent } from "./WebSocketCloseEvent";

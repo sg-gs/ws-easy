@@ -1,0 +1,42 @@
+<html>
+    <head></head>
+    <body>
+        <input type="file" />
+        <p id="progress-info">
+            Progress 0%
+        </p>
+        <script src="index.js"></script>
+        <script>
+            window.onload = function () {
+                const url = "localhost";
+                const port = 3000;
+                const ws = new WS({ url, port });
+
+                ws.on('connection', (socket) => {
+                    console.log('Connected!')
+                    ws.emit('exampleevent', 3);
+                });
+
+                
+
+
+
+                // document.querySelector('input').addEventListener('change', function () {
+                //     const reader = new FileReader();
+                //     reader.onload = function () {
+                //         const arrayBuffer = this.result;
+                //         console.log(ws.stream(arrayBuffer));
+                //         ws.stream(arrayBuffer)
+                //             .usingChunksOf(4096)
+                //             .start((progress) => {
+                //                 console.log(`Progress: ${progress}%`)
+                //                 document.getElementById('progress-info').textContent = `Progress: ${progress}%`;
+                //             })
+                //             .then(console.log)
+                //     }
+                //     reader.readAsArrayBuffer(this.files[0]);
+                // }, false);
+            }
+        </script>
+    </body>
+</html>

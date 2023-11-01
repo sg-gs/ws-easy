@@ -2,14 +2,14 @@ import { Server as WebSocketServer } from 'ws';
 
 import WebSocketEvent from "./WebSocketEvent";
 
-export default class WebSocketErrorEvent implements WebSocketEvent {
+export default class WebSocketCustomEvent implements WebSocketEvent {
 
     callback: (wss: WebSocketServer, ...args: any[]) => void;
     name: string;
     wss!: WebSocketServer;
 
-    constructor(name: string) {
-        this.callback = () => { };
+    constructor(name: string, callback: (wss: WebSocketServer, ...args: any[]) => void) {
+        this.callback = callback;
         this.name = name;
     }
 

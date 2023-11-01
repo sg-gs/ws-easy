@@ -1,6 +1,4 @@
-import { Server as WebSocketServer } from "ws";
-
-import { WebSocketCustomEvent, WebSocketEvent } from ".";
+import { WebSocketCustomEvent } from ".";
 
 export default class WebSocketCustomEvents {
     customEventsMap: Map<string, WebSocketCustomEvent>;
